@@ -1,0 +1,34 @@
+<div class="row-empty-space"></div>
+<h1 class="center">{{ data.h1 }}</h1>
+<div class="row-empty-space"></div>
+
+{% if data.err %}
+{% for err in data.err %}
+<h1 class="center">{{ err }}</h1>
+{% endfor %}
+{% endif %}
+
+<form action="/index/save" method="post">
+    <br>
+
+    <div class="form-group">
+        <input required name="author" class="form-control" id="name" placeholder="Enter your name"  value="{{ data.tasks.author }}">
+    </div>
+
+    <div class="form-group">
+        <input required name="email" class="form-control" id="InputEmail" placeholder="Enter email" value="{{ data.tasks.email }}">
+    </div>
+
+    <div class="form-group">
+        <label for="task">Enter task</label>
+        <textarea name="task" required class="form-control" id="task" rows="3">{{ data.tasks.task }}</textarea>
+    </div>
+
+    <br>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a href="/" class="btn btn-primary">Cancel</a>
+</form>
+
+
+
+

@@ -1,0 +1,49 @@
+{% if data.tasks.status > 0 %}
+{% set checked_status = 'checked' %}
+{% else %}
+{% set checked_status = '' %}
+{% endif %}
+
+
+<div class="row-empty-space"></div>
+<h1 class="center">{{ data.h1 }} ID {{ data.tasks.id_task }}</h1>
+<div class="row-empty-space"></div>
+
+{% if data.err %}
+{% for err in data.err %}
+<h1 class="center">{{ err }}</h1>
+{% endfor %}
+{% endif %}
+
+<form action="/index/update" method="post">
+    <br>
+    
+    <div class="form-group">
+        <input required class="form-control d-none"  id="id_task" name="id_task" value="{{ data.tasks.id_task }}">
+    </div>
+    
+    <div class="form-group">
+        <input required class="form-control" id="name" placeholder="Ведите имя" name="author" value="{{ data.tasks.author }}">
+    </div>
+    
+    <div class="form-group">
+        <input required class="form-control" id="InputEmail" placeholder="Enter email" name="email" value="{{ data.tasks.email }}">
+    </div>
+    
+    <div class="form-group">
+        <label for="task">Введите задачу</label>
+        <textarea required class="form-control" id="task" rows="3" name="task">{{ data.tasks.task }}</textarea>
+    </div>
+    
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="exampleCheck1" name="status" value="1" {{ checked_status }}>
+        <label class="form-check-label" for="exampleCheck1">Выполнено</label>
+    </div>
+    <br>
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <a href="/" class="btn btn-primary">Отмена</a>
+</form>
+
+
+
+

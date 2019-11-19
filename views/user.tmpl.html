@@ -1,0 +1,18 @@
+{% include 'head.tmpl.html' %}
+{% include 'header.tmpl.html' %}
+
+<main>
+    <div class="container center">
+        {% if data.template == true %}
+
+        {% include ([data.template, '.tmpl.html']|join) %}
+
+        {% else %}
+
+        {% include err04.tmpl.html %}
+
+        {% endif %}
+    </div>
+</main>
+
+{% include 'footer.tmpl.html' %}

@@ -1,0 +1,17 @@
+{% include 'head.tmpl.html' %}
+{% include 'header.tmpl.html' %}
+
+<div class="row-empty-space"></div>
+
+    <h3 class="center">
+        {% if data.error %}
+        {{ data.error }}
+        {% else %}
+        {{ data.h1 }}
+        {% endif %}
+    </h3>
+
+<div class="row-empty-space"></div>
+
+
+{% include 'footer.tmpl.html' %}
