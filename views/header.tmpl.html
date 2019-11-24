@@ -1,12 +1,3 @@
-{# set class names according to user is admin or not #}
-
-{% if session.admin_can_do_it == 'yes' %}
-{% set class_show_login = 'd-none' %}
-{% set class_show_logout = 'd-block' %}
-{% else %}
-{% set class_show_login = 'd-block' %}
-{% set class_show_logout = 'd-none' %}
-{% endif %}
 
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark" fixed-top>
@@ -32,8 +23,13 @@
             <div class="d-inline-flex">
                <!-- <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">-->
                 <!--<button class="btn btn-outline-light my-2 my-sm-0" type="submit">Login</button>-->
+                
+                {% if session.admin_can_do_it == 'yes' %}
+                    <div class="{{ class_show_logout }}  ml-2"><a href="/user/logout/" class="btn btn-outline-light my-2 my-sm-0">Loguot</a></div>
+                {% else %}
                 <div class="{{ class_show_login }}  ml-2"><a href="/user/login/" class="btn btn-outline-light my-2 my-sm-0">Login</a></div>
-                <div class="{{ class_show_logout }}  ml-2"><a href="/user/logout/" class="btn btn-outline-light my-2 my-sm-0">Loguot</a></div>
+                {% endif %}
+                
             </div>
 
 
