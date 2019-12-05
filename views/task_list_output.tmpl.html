@@ -1,0 +1,34 @@
+<div class="d-flex flex-wrap justify-content-center align-items-stretch">
+
+    {% for task in data.tasks.bd %}
+
+    <div class="card mw-90 m-3 cards-width">
+        <div class="card-body">
+            <h5 class="card-title">{{task.author }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ task.email }}</h6>
+            <p class="d-block">ID {{ task.id_task }}</p>
+            <p class="card-text">{{ task.task|nl2br }}</p>
+
+            <div class="d-flex align-content-start flex-wrap">
+                {% if task.status > 0 %}
+                <div class="icon-cards mx-auto" title="Done">
+                    <ion-icon name="checkmark-circle"></ion-icon>
+                </div>
+                {% endif %}
+                {% if task.redacted > 0 %}
+                <div class="icon-cards mx-auto" title="Redacted">
+                    <ion-icon name="contact"></ion-icon>
+                </div>
+                {% endif %}
+                {% if session.admin_can_do_it == 'yes' %}
+                <div class="icon-cards mx-auto" title="Go to redact"><a href="/index/redact/{{ task.id_task }}" class="card-link">
+                    <ion-icon name="construct"></ion-icon>
+                </a></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% endfor %}
+
+</div>

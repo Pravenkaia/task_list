@@ -9,8 +9,6 @@ use PDOException;
 
 class DB
 {
-    //use countProducts;
-
     private static $PDOInstance = null;
     private $connection;
 
@@ -41,10 +39,9 @@ class DB
     private function setDb()
     {
         try {
-            // соединяемся с базой данных
             $connect_str = DB_DRIVER . ':host=' . DB_HOST . ';dbname=' . DB_NAME . ";charset" . DB_CHARSET;
             self::$PDOInstance = new PDO($connect_str, DB_USER, DB_PASS, DB_OPTIONS);
-            // в случае ошибки SQL выражения выведем сообщене об ошибке
+
             $error_array = self::$PDOInstance->errorInfo();
 
 
@@ -55,7 +52,6 @@ class DB
             return self::$PDOInstance;
 
         } catch (PDOException $e) {
-            echo 'Error DB in Query : ', $e->getMessage(), "\n";
             die("Error (PDO CONNECTION ): " . $e->getMessage());
         }
     }
@@ -69,8 +65,7 @@ class DB
                 return $stmt;
             }
         } catch (PDOException $e) {
-            echo 'Error DB in Query : ', $e->getMessage(), "\n";
-            //die("Error DB in Query : " . $e->getMessage());
+            die("Error DB in Query : " . $e->getMessage());
         }
         return false;
     }

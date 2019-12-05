@@ -45,7 +45,7 @@ class UserController extends Controller
 
     public function actionAdmin()
     {
-        $this->data['template'] = 'user_ok';
+        $this->data['template'] = 'ok';
         $this->data['title'] = 'Admin';
         $this->data['h1'] = 'Admin';
         $this->data['ok'] = "Hello, Admin! \n\r You can redact tasks";
@@ -57,7 +57,7 @@ class UserController extends Controller
 
     public function actionLogout()
     {
-        $this->data['template'] = 'user_ok';
+        $this->data['template'] = 'ok';
         $this->data['title'] = 'Guest';
         $this->data['h1'] = 'Guest';
         $this->data['ok'] = "Hello, Guest! \n\r You can make and view tasks";

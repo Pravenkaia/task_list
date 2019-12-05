@@ -10,21 +10,14 @@ include_once('../app.php');
 User::check();
 if (User::isLogged()) {
     $_SESSION['admin_can_do_it'] = 'yes';
-}
-else {
+} else {
     Session::destroy();
 }
 
 $rout = new Router();
-// path of parameters is:
-// $controllerName / $methodName/.... param1/param2/.....
-// for a example: index/index/  or /index/index/name/desk/6
-// $paramName =  param1
-// $routParameters = array(param1, param2, ....);
 
 $controllerName = $rout->getControllerName();
 $methodName = $rout->getMethodName();
-// optional parameter array
 $routParameters = $rout->getDataParameters();
 
 
@@ -34,10 +27,14 @@ if (!class_exists($controllerName)) {
 }
 if (!$methodName) $methodName = 'index';
 
+if (class_exists($controllerModelClassDefinitions[$controllerName])) $model = new $controllerModelClassDefinitions[$controllerName]();
+else $model = new \models\EmptyModel();
+
 
 $controller = new $controllerName();
-$controller->$methodName($routParameters);
+$controller->$methodName($model, $routParameters);
 $data = $controller->getData();
+
 
 try {
 
@@ -52,7 +49,6 @@ try {
         'data' => $data,
     ));
 } catch (Exception $e) {
-    // echo 'ERROR: ' . $e->getMessage();
     die ('ERROR: ' . $e->getMessage());
 }
 

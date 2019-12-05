@@ -28,7 +28,8 @@ class  Router
     protected $methodName;
 
     /**
-     * array of other (option) parameters [ param1 / param2 /param3 ]
+     * optional parameter array
+     * array of other (optional) parameters [ param1 / param2 /param3 ]
      * @var array
      */
     protected $otherDataParameters = [];
@@ -72,11 +73,8 @@ class  Router
             $url_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
             $url_path = mb_strtolower($url_path);
 
-            //echo '$url_path = ' . $url_path . '<br>';
-
             if (preg_match('%\/[\/a-z0-9_-]*$%', $url_path)) {
                 $this->path = trim($url_path, '%\*/-*%');
-                //echo '$this->path' . $this->path . '<br>';
                 return true;
             }
 

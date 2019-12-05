@@ -20,7 +20,8 @@ class Err404Controller
         return $this->data;
     }
 
-    public function actionIndex() {
+    public function actionIndex()
+    {
         $this->setData();
     }
 
@@ -34,9 +35,9 @@ class Err404Controller
             'template' => 'err404'
         ];
     }
+
     public function __call($name, $arguments)
     {
-        // TODO: Implement __call() method.
         $this->data = ['h1' => 'Page and Method is not found!!'];
         $this->getData();
     }

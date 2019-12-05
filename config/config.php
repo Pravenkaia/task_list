@@ -7,7 +7,7 @@ const DB_NAME = 'task';
 const DB_CHARSET = 'utf8';
 
 const DB_OPTIONS = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_EMULATE_PREPARES => false,
     PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
 ];
@@ -29,3 +29,7 @@ const PATH_TEMPLATES = '..' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATO
 //Mailer
 const MAIL_ADMIN_BCC = 'pravlen@rukzak.ru';
 const MAIL_FROM = '44lapki@gmail.com';
+
+$controllerModelClassDefinitions = [
+    '\controllers\IndexController' => '\models\Task',
+];

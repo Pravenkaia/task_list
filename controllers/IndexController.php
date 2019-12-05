@@ -4,35 +4,27 @@
 namespace controllers;
 
 
-use models\Task;
+use models\ITaskActions;
 use models\User;
 
 class IndexController extends Controller
 {
-    protected $model;
     protected $data = ['page' => 'index', 'tasks' => [], 'title' => SITE_NAME, 'h1' => SITE_NAME, 'template' => 'task_list', 'err' => ''];
 
 
-    public function __construct()
-    {
-        $this->model = new Task();
-    }
-
     public function getData()
     {
-        // echo '<br>' . __LINE__ . ' ' . __FILE__ . '<br>'; echo '<pre>'; var_dump($this->data); echo '</pre>';
         return $this->data;
     }
 
     /**
+     * @param ITaskActions $model
      * @param array $params
-     * set data by list of tasks
-     * page index/index
      */
-    public function actionIndex($params = [])
+    public function actionIndex($model, $params = [])
     {
         $this->data['template'] = 'task_list';
-        $this->data['tasks'] = $this->model->getPagingTasks($params);
+        $this->data['tasks'] = $model->getPagingTasks($params);
         $this->data['title'] = 'Task list';
         $this->data['h1'] = 'Task list';
         $this->data['limit'] = LIMIT;
@@ -54,40 +46,40 @@ class IndexController extends Controller
 
 
     /**
+     * @param ITaskActions $model
      * saving data task after filling of the form
      * page /index/save
      */
-    public function actionSave()
+    public function actionSave($model)
     {
         $this->data['template'] = 'task_form';
         $this->data['title'] = 'Task data saving';
         $this->data['h1'] = 'Task data saving';
 
-        // validate task form data
-        if ($this->model->validate()) {
-            // try to save data, swap template for 'template' = 'task_ok'
-            if ($this->model->toSave()) {
-                // save data success
+        if ($model->validate()) {
+            if ($model->toSave()) {
 
                 // send confirm mail
-                $this->model->saveConfirmEmailMessage();
-                $confirmMessage = $this->model->getSaveConfirmEmailMessage();
-                $this->data['task_ok'] = "The task was successfully saved!\r\n" . $confirmMessage;
+                $model->saveConfirmEmailMessage();
+                $confirmMessage = $model->getSaveConfirmEmailMessage();
 
-                // swap template for 'template' = 'task_ok'
-                $this->data['template'] = 'task_ok';
+                $this->data['ok'] = "The task was successfully saved!\r\n" . $confirmMessage;
+                $this->data['template'] = 'ok';
             } else {
                 $this->getErrors('Error data saving');
             }
         } else {
-            // incorrect form data, remain the template the same ( 'template' = 'task_form' )
             $this->notValid();
-            $this->data['tasks'] = $this->model->getValidData();
+            $this->data['tasks'] = $model->getValidData();
         }
 
     }
 
-    public function actionRedact($param)
+    /**
+     * @param ITaskActions $model
+     * @param $param
+     */
+    public function actionRedact($model, $param)
     {
         $id = (int)$param[0];
         // check is admin logged, admin only can redact
@@ -98,13 +90,16 @@ class IndexController extends Controller
         // set headers
         $this->updateHeaders();
 
-        $this->data['tasks'] = $this->model->getTaskId($id);
+        $this->data['tasks'] = $model->getTaskId($id);
         if (!$this->data['tasks']) $this->getErrors(' No Task with ID ' . $id);
     }
 
-    public function actionUpdate()
+    /**
+     * @param ITaskActions $model
+     */
+    public function actionUpdate($model)
     {
-        // check is admin logged, admin only can redact
+        // check is admin logged, admin only can update
         if (!User::isLogged()) {
             header('Location: /user/login');
             exit;
@@ -112,20 +107,16 @@ class IndexController extends Controller
         // set headers
         $this->updateHeaders();
 
-        // validate task form data
-        if ($this->model->validate()) {
-            // if valid data
-            // try to update data, swap template for 'template' = 'task_ok'
-            if ($this->model->toUpdate()) {
-                $this->data['task_ok'] = "The task was successfully Updated!";
-                $this->data['template'] = 'task_ok';
+        if ($model->validate()) {
+            if ($model->toUpdate()) {
+                $this->data['ok'] = "The task was successfully Updated!";
+                $this->data['template'] = 'ok';
             } else {
                 $this->getErrors('Error data updating');
             }
         } else {
-            // incorrect form data, remain the template the same ( 'template' = 'task_form_redact' )
             $this->notValid();
-            $this->data['tasks'] = $this->model->getValidData();
+            $this->data['tasks'] = $model->getValidData();
         }
     }
 
@@ -140,11 +131,12 @@ class IndexController extends Controller
     }
 
     /**
+     * @param ITaskActions $model
      * set  $this->data['err'] if not valid form data
      */
-    protected function notValid()
+    protected function notValid($model)
     {
-        $err = $this->model->getValidateErrMess();
+        $err = $model->getValidateErrMess();
         //var_dump($err);
         $this->data['err'] = 'Validation error!';
         $this->data['err'] = $err;

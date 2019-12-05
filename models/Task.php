@@ -4,10 +4,6 @@
 namespace models;
 
 
-use controllers\Err404Controller;
-
-use PDO;
-
 /**
  * Class Task
  * @package models
@@ -21,7 +17,7 @@ use PDO;
  * $sentEmailConfirmMessage - message about sending confirm email
  *  ;
  */
-class Task
+class Task implements ITaskActions
 {
     private $countOfTasks = 0;
     private $resultTaskId = [];
@@ -58,10 +54,7 @@ class Task
     }
 
 
-    /**
-     * @return bool
-     */
-    public function toSave()
+    public function toSave(): bool
     {
         if ($this->save($this->validData)) return true;
         return false;
@@ -84,7 +77,7 @@ class Task
     }
 
 
-    public function toUpdate()
+    public function toUpdate(): bool
     {
         if ($this->update($this->validData)) return true;
         return false;
@@ -101,19 +94,19 @@ class Task
         if ($params[1] !== 'desk') $params[1] = 'ask';
         $params[2] = $params[2] ?? 0;
 
-        // list of tasks
         $this->tasksList($params);
         $res = $this->resultTasksList;
 
-        // count all tasks
         $this->countTasks();
 
         $count_pages = (int)ceil($this->getCountTasks() / LIMIT) ?? 1;
 
         if ($res) {
             $this->resultPagingTasks = [
+
                 // result of select request
                 'bd' => $res,
+
                 // pagination parameters
                 'pagination' => [
                     'order_by' => $params[0],
@@ -169,29 +162,26 @@ class Task
      * @param array $params
      * n start row number,
      * limit => LIMIT
-     * field_order_by sort field
+     * fieldOrderBy sort field
      * direction DESC or ASC
      * @return bool
      */
     protected function tasksList($params = [])
     {
-        //  field to order by
-        $order_by = $params[0] ?? 'id_task';
-        $order_by = mb_strtolower($order_by);
+        $fieldOrderBy = $params[0] ?? 'id_task';
+        $fieldOrderBy = mb_strtolower($fieldOrderBy);
 
         $direction = 'DESC';
         if (mb_strtolower($params[1]) == 'ask') {
             $direction = '';
         }
 
-        $limit = 3;
-        if (LIMIT) $limit = LIMIT;
+        $limit = (int)LIMIT;
 
-        // offset
-        $n = (int)$params[2] ?? 0;
+        $offset = (int)$params[2] ?? 0;
 
-        $sql = "SELECT * FROM `" . TABLE_TASKS . "` WHERE 1 ORDER BY $order_by $direction LIMIT $n,$limit ;";
-        $res = DB::getInstance()->querySelect($sql, []);
+        $sql = "SELECT * FROM " . TABLE_TASKS . " WHERE 1 ORDER BY $fieldOrderBy $direction LIMIT :offset,:limit ;";
+        $res = DB::getInstance()->querySelect($sql, [':offset' => $offset, ':limit' => $limit]);
 
         if ($res) {
             $this->resultTasksList = $res;
@@ -203,54 +193,41 @@ class Task
 
     /**
      * check form data
-     * @return mixed array|bool
      *
      * if not server request - return error Err404Controller
      * if form data error  - return array of errors
      * if ok! - return data ready to save into DB
      */
-    public function validate()
+    public function validate(): bool
     {
-        //// http
-        // if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        //     header('location: /err404/index') or die ('404 Not Found');
-        //     exit;
-        // }
-
-        // error messages array
-        $errMes = [];
-        // valid data messages array
+        $errMessages = [];
         $data = [];
 
         if ($_POST['id_task']) $data['id_task'] = $_POST['id_task'];
 
-        // check author field
         $author = htmlspecialchars(strip_tags($_POST['author']));
-        if (!$author) $errMes[] = 'The "author" field is not filled in';
+        if (!$author) $errMessages[] = 'The "author" field is not filled in';
         else $data['author'] = $author;
 
-        // check task field
         $task = htmlspecialchars(strip_tags($_POST['task']));
-        if (!$task) $errMes[] = 'The "Task" field is not filled in';
+        if (!$task) $errMessages[] = 'The "Task" field is not filled in';
         else $data['task'] = $task;
 
-        // check email field
         $mailCheckedPreg = preg_match('/^([a-z0-9_-]+\.*)*[a-z0-9_-]+@[a-z0-9_-]+\.[a-z]{2,6}$/i', $_POST['email']);
         if (!$mailCheckedPreg || !$_POST['email']) {
-            $errMes[] = 'Incorrect email';
+            $errMessages[] = 'Incorrect email';
         } else $data['email'] = $_POST['email'];
 
-        // check task field
         if ($_POST['status']) {
             $data['status'] = 1;
         }
 
         $this->validData = $data;
 
-        if (!$errMes) {
+        if (!$errMessages) {
             return true;
         } else {
-            $this->validateErrMess = $errMes;
+            $this->validateErrMess = $errMessages;
             return false;
         }
     }
@@ -277,10 +254,7 @@ class Task
     }
 
 
-    /**
-     * @return bool
-     */
-    public function saveConfirmEmailMessage()
+    public function saveConfirmEmailMessage(): bool
     {
         if (!$this->validData) return false;
 
@@ -289,8 +263,6 @@ class Task
         $emailSubj = 'Confirmation of task creating';
 
         if (!$email) return false;
-
-        //$success = $this->sendEmail($email, $emailBody, $emailSubj);
 
         $mailSender = new Mailer();
         $success = $mailSender->sendEmail($email, $emailBody, $emailSubj);
@@ -318,8 +290,6 @@ class Task
      */
     private function update($data)
     {
-        //echo '<br>' . __LINE__ . ' ' . __FILE__ . '<br>';
-        //var_dump($data);
         if (!$data['task'] || !$data['author'] || !$data['email'] || !$data['id_task']) return false;
         $data['status'] = $data['status'] ? 1 : 0;
 
