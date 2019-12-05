@@ -27,8 +27,8 @@ const ERROR_CONTROLLER = '\\controllers\\' . 'Err404Controller';
 const PATH_TEMPLATES = '..' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
 
 //Mailer
-const MAIL_ADMIN_BCC = 'pravlen@rukzak.ru';
-const MAIL_FROM = '44lapki@gmail.com';
+const MAIL_ADMIN_BCC = 'test@test.ts';
+const MAIL_FROM = 'test@test.ts';
 
 $controllerModelClassDefinitions = [
     '\controllers\IndexController' => '\models\Task',
